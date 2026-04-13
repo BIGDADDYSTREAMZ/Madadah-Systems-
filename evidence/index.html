@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Madadah evidence: verified fail-closed behaviour, controlled recovery, integrity testing, soak testing, and live-condition results.">
+<link rel="canonical" href="https://madadh.systems/evidence/">
+<title>Madadah Evidence</title>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="../style.css">
+<style>
+  .evidence-intro {
+    max-width: 700px;
+    margin-bottom: 60px;
+  }
+
+  .evidence-intro h2 {
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+
+  .evidence-intro h2 em { font-style: normal; color: var(--amber); }
+  .evidence-intro p { font-size: 16px; color: var(--light); line-height: 1.7; }
+
+  .test-block {
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+    position: relative;
+  }
+
+  .test-header {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 0;
+    align-items: stretch;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .test-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    background: var(--off);
+    padding: 16px 0;
+  }
+
+  .test-title-block {
+    padding: 16px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .test-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+  }
+
+  .test-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .test-status {
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    gap: 8px;
+    border-left: 1px solid var(--border);
+  }
+
+  .pass-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #2d8a4e;
+    box-shadow: 0 0 8px rgba(45,138,78,0.8);
+    flex-shrink: 0;
+  }
+
+  .pass-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2d8a4e;
+  }
+
+  .test-body {
+    padding: 24px 28px 24px calc(80px + 28px);
+    background: var(--black);
+  }
+
+  .test-findings {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .finding {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.55;
+  }
+
+  .finding-arrow {
+    color: var(--amber);
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-top: 1px;
+  }
+
+  .test-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .meta-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--light);
+    letter-spacing: 0.05em;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 60px;
+  }
+
+  .summary-card {
+    background: var(--black);
+    padding: 32px 28px;
+    text-align: center;
+  }
+
+  .summary-num {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 800;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .summary-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .statement-block {
+    background: var(--off);
+    border: 1px solid var(--border);
+    padding: 40px;
+    margin-top: 60px;
+    max-width: 760px;
+  }
+
+  .statement-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+
+  .statement-text {
+    font-size: 15px;
+    color: var(--light);
+    line-height: 1.75;
+  }
+
+  .statement-sig {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+
+  .download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 40px 0 60px;
+  }
+
+  .download-card {
+    background: var(--black);
+    padding: 28px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .download-card:hover {
+    background: var(--off);
+    transform: translateY(-1px);
+  }
+
+  .download-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+
+  .download-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .download-note {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 1.65;
+    max-width: 760px;
+    margin-top: -36px;
+    margin-bottom: 60px;
+  }
+
+  @media (max-width: 700px) {
+    .test-body { padding: 20px; }
+    .test-header { grid-template-columns: 60px 1fr; }
+    .test-status { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="../index.html">Madadah</a>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../architecture/index.html">Architecture</a>
+    <a href="index.html" class="active">Evidence</a>
+    <a href="../about/index.html">About</a>
+    <a href="../index.html#contact"  class="nav-contact">Contact</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Evidence Pack</div>
+  <h1>Observed.<br><em>Recorded. Verified.</em></h1>
+  <div class="page-hero-rule"></div>
+  <p>The following results document Madadah's behaviour under live conditions. These are observed outcomes from real test runs against the deployed engine. Each result listed here was directly witnessed and logged.</p>
+</div>
+
+<div class="status-strip">
+  <div class="status-item"><span class="status-dot"></span> Engine Version: v7.1</div>
+  <div class="status-item"><span class="status-dot"></span> Live test environment</div>
+  <div class="status-item"><span class="status-dot"></span> Conformance: Pass</div>
+  <div class="status-item"><span class="status-dot"></span> Soak 7hr: Pass</div>
+  <div class="status-item"><span class="status-dot amber"></span> Chaos Testing: Pass</div>
+</div>
+
+<section style="padding-top: 34px; padding-bottom: 0;">
+  <div class="reveal" style="max-width: 980px; margin: 0 auto; padding: 0 22px;">
+    <div style="border: 1px solid rgba(248, 165, 58, 0.22); background: rgba(248, 165, 58, 0.06); padding: 18px 20px; border-radius: 14px; color: var(--light); line-height: 1.7;">
+      <strong>Current commercial status:</strong> The evidence on this page reflects the current Madadah engine build. Madadah is not presently deployed under an active customer lease and is currently available for a controlled pilot.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Test Summary</div>
+
+  <div class="summary-grid reveal">
+    <div class="summary-card">
+      <div class="summary-num">9</div>
+      <div class="summary-label">Verified Behaviors</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num">7hr</div>
+      <div class="summary-label">Soak Test Duration</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num">100%</div>
+      <div class="summary-label">Halt Accuracy</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num">0</div>
+      <div class="summary-label">False Recoveries</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num">0</div>
+      <div class="summary-label">Fail-Open Events</div>
+    </div>
+  </div>
+
+  <div class="evidence-intro reveal">
+    <h2>Every halt was<br><em>deliberate and correct.</em></h2>
+    <p>Across conformance testing, a seven-hour soak run, and chaos injection, Madadah produced zero false recoveries and zero fail-open events. Every halt condition triggered a deterministic halt. Every recovery attempt without the correct physical tokens was correctly denied.</p>
+  </div>
+
+  <div class="section-label">Evidence Files</div>
+  <div class="download-grid reveal">
+    <a class="download-card" href="../files/madadah_evidence_pack.zip">
+      <span class="download-sub">ZIP Archive</span>
+      <span class="download-title">Full evidence pack</span>
+    </a>
+    <a class="download-card" href="../files/madadah_evidence_pack_sha256.txt">
+      <span class="download-sub">SHA-256</span>
+      <span class="download-title">Hash file</span>
+    </a>
+    <a class="download-card" href="../files/madadah_evidence_pack.sig">
+      <span class="download-sub">Detached signature</span>
+      <span class="download-title">Signature file</span>
+    </a>
+  </div>
+  <p class="download-note">Publish each pack release with the archive, its SHA-256 hash, and its detached signature. Replace the placeholder filenames above with your exact public filenames before go-live.</p>
+
+
+  <!-- INT-001 -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">INT-001</div>
+      <div class="test-title-block">
+        <div class="test-name">Live Authority Pull Halt</div>
+        <div class="test-sub">Security Halt &mdash; Master USB Removal During Operation</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Master USB physically removed from running system during active supervisory cycle.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Master probe detected authority loss on next polling interval.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Watchdog received authority failure signal via bus.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Deterministic halt initiated. All protected roles stopped in defined order.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch written to Master USB before USB fully removed. Latch confirmed persisted.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>HALT_STOP_PHASE_VERIFIED and HALT_LATCH_PERSIST_VERIFIED both emitted. SECURITY_HALT_COMPLETE confirmed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>System remained halted. No automatic recovery attempted.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS — Deterministic halt confirmed</div></div>
+        <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INT-002 -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">INT-002</div>
+      <div class="test-title-block">
+        <div class="test-name">Latch Persistence Across Reboot</div>
+        <div class="test-sub">Halt State Survival &mdash; Full System Reboot</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch established via INT-001 authority pull event.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Host machine fully rebooted with Master USB absent.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>On reconnection of Master USB and stack start, watchdog detected existing halt latch.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>System correctly refused to enter normal operation. Halt state enforced from latch.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Clearance sequence required to proceed. No bypass path available.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS — Latch survived reboot</div></div>
+        <div class="meta-item"><div class="meta-label">Recovery without clearance</div><div class="meta-value">Correctly denied</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INT-003 -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">INT-003</div>
+      <div class="test-title-block">
+        <div class="test-name">Dual-Physical Recovery End-to-End</div>
+        <div class="test-sub">Clearance Ceremony &mdash; Both Tokens Required</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch active from prior halt event. System in halted state.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Master USB inserted. Clearance USB inserted. Both hardware tokens physically present.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>sign_payload.ps1 executed on offline signing station with Master USB present. Fresh request_id generated.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Signed clearance presented to the watchdog. Clearance token binding verified against enrolled hardware identifiers.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>RSA signature verified against the enrolled authority certificate.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Monotonic counter and 600-second freshness window validated.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch cleared. Controlled restart permitted. System returned to normal operation.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS — Full clearance ceremony validated</div></div>
+        <div class="meta-item"><div class="meta-label">Single-token attempt</div><div class="meta-value">Correctly denied</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOAK -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">SOAK-01</div>
+      <div class="test-title-block">
+        <div class="test-name">Seven Hour Soak Test</div>
+        <div class="test-sub">Extended Runtime Stability &mdash; Continuous Operation</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Engine run continuously for seven hours under normal operating conditions.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>All four roles maintained continuous operation throughout the soak period.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Watchdog supervisory cycle maintained integrity checks on every pass.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>No unexpected halts. No role failures. No memory or resource degradation observed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Log output consistent and structured throughout. No anomalous entries.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Authority handshake maintained on every supervisory cycle without drift.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Duration</div><div class="meta-value">7 hours continuous</div></div>
+        <div class="meta-item"><div class="meta-label">Unexpected halts</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Role failures</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAOS -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">CHAOS-01</div>
+      <div class="test-title-block">
+        <div class="test-name">Chaos and Fault Injection</div>
+        <div class="test-sub">Injected Fault Conditions &mdash; Stability Under Stress</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Fault conditions injected including process kills, file corruption attempts, and authority disruption.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Each injected fault produced a deterministic, correct response from the watchdog.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>No fault condition caused a fail-open event. Every fault either triggered correct halt or was correctly ignored.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch written correctly in all fault-triggered halt scenarios.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>System demonstrated stable recovery from every injected fault that did not trigger halt.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS — All faults handled correctly</div></div>
+        <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPLAY -->
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">SEC-001</div>
+      <div class="test-title-block">
+        <div class="test-name">Replay Attack Resistance</div>
+        <div class="test-sub">Monotonic Counter and Freshness Window Validation</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Previously valid signed clearance resubmitted after successful recovery.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Nonce ledger on Master USB correctly identified request_id as already consumed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Clearance rejected. Recovery denied. System correctly treated replay as invalid.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Freshness window test: clearance presented outside 600-second window. Correctly rejected regardless of valid signature.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS — Replay structurally impossible</div></div>
+        <div class="meta-item"><div class="meta-label">Successful replays</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Engine version</div><div class="meta-value">v7.1</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statement-block reveal">
+    <div class="statement-label">Operator Statement</div>
+    <p class="statement-text">
+      The test results documented on this page represent direct observation of Madadah behaviour under live conditions. No result has been fabricated or extrapolated. Each test was executed against the deployed v7.1 engine with real hardware tokens physically present. The engine behaved as designed in every test case. No fail-open event was observed across any test run.
+    </p>
+    <div class="statement-sig">
+      Madadah Systems &nbsp;&mdash;&nbsp; ABN 44 103 797 283 &nbsp;&mdash;&nbsp; Australia &nbsp;&mdash;&nbsp; 2026
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-brand">Madadah Systems &mdash; Deterministic fail-closed control</span>
+  <div class="footer-nav">
+    <a href="../index.html">Home</a>
+    <a href="../architecture/index.html">Architecture</a>
+    <a href="index.html">Evidence</a>
+    <a href="../about/index.html">About</a>
+  </div>
+  <span class="footer-right"><a href="mailto:contact@madadh.systems">contact@madadh.systems</a></span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, {threshold: 0.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

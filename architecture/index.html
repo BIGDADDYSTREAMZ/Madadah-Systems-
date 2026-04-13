@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Madadah architecture: four-role local supervision, physical authority, persistent halt enforcement, and controlled recovery.">
+<link rel="canonical" href="https://madadh.systems/architecture/">
+<title>Madadah Architecture</title>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="../style.css">
+<style>
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  .arch-card {
+    background: var(--black);
+    padding: 40px 36px;
+    position: relative;
+    transition: background 0.3s;
+  }
+
+  .arch-card:hover { background: var(--off); }
+
+  .arch-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .arch-card:hover::before { transform: scaleX(1); }
+
+  .arch-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .arch-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .arch-body { font-size: 14px; color: var(--mid); line-height: 1.7; }
+
+  .arch-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    background: var(--off);
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+  }
+
+  .chain-section { background: var(--off); }
+
+  .chain {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 760px;
+    margin-top: 48px;
+    border: 1px solid var(--border);
+  }
+
+  .chain-step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chain-step:last-child { border-bottom: none; }
+
+  .chain-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    background: var(--off);
+    padding: 20px 0;
+  }
+
+  .chain-content {
+    padding: 20px 28px;
+    background: var(--black);
+  }
+
+  .chain-content strong {
+    display: block;
+    font-size: 14px;
+    color: var(--white);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .chain-content span {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.55;
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  .spec-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    text-align: left;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--off);
+  }
+
+  .spec-table td {
+    padding: 16px 24px;
+    font-size: 13px;
+    color: var(--mid);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .spec-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--light);
+    white-space: nowrap;
+    width: 220px;
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+  .spec-table tr:hover td { background: var(--off); }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .two-col h2 {
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  .two-col h2 em { font-style: normal; color: var(--amber); }
+  .two-col p { font-size: 15px; color: var(--light); line-height: 1.7; margin-bottom: 16px; }
+
+  @media (max-width: 900px) {
+    .two-col { grid-template-columns: 1fr; gap: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="../index.html">Madadah</a>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html" class="active">Architecture</a>
+    <a href="../evidence/index.html">Evidence</a>
+    <a href="../about/index.html">About</a>
+    <a href="../index.html#contact"  class="nav-contact">Contact</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">System Architecture</div>
+  <h1>Built to enforce.<br><em>Not to negotiate.</em></h1>
+  <div class="page-hero-rule"></div>
+  <p>Madadah is a four-role hardware-bound control system running natively on Windows. Every design decision prioritises fail-closed behaviour, physical authority, and deterministic state. There is no cloud dependency, no remote control plane, and no software path that bypasses physical presence.</p>
+</div>
+
+<div class="status-strip">
+  <div class="status-item"><span class="status-dot"></span> PowerShell 5.1 Native</div>
+  <div class="status-item"><span class="status-dot"></span> Python 3.11 Roles</div>
+  <div class="status-item"><span class="status-dot"></span> SHA-256 Integrity</div>
+  <div class="status-item"><span class="status-dot"></span> RSA CNG Cryptography</div>
+  <div class="status-item"><span class="status-dot"></span> Atomic JSON IPC</div>
+  <div class="status-item"><span class="status-dot"></span> Portable — External SSD</div>
+</div>
+
+<!-- FOUR ROLES -->
+<section>
+  <div class="section-label">Supervision Roles</div>
+  <div class="arch-grid reveal">
+    <div class="arch-card">
+      <div class="arch-num">Role 01</div>
+      <div class="arch-title">Master Probe</div>
+      <p class="arch-body">Continuously validates physical USB authority. Verifies volume label, WMI serial, and disk binding against enrolled constants. Performs cryptographic SHA-256 handshake against the master signing certificate. Acts as a forensic black box — intentionally not stopped on security halt. Continues running to record post-halt state.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-num">Role 02</div>
+      <div class="arch-title">Heartbeat Engine</div>
+      <p class="arch-body">Monitors runtime continuity of the supervision plane. Detects loss of control-plane coherence. If the watchdog supervisor fails to pulse within the defined window, the heartbeat triggers an immediate halt condition. No grace period. No retry. Absence of signal is treated as a fault.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-num">Role 03</div>
+      <div class="arch-title">Health Probe</div>
+      <p class="arch-body">Evaluates the health of the protected runtime and control-plane processes. Monitors for defined failure states including process absence, unexpected exits, and integrity drift. Reports health status to the bus for watchdog consumption. A single health failure condition is sufficient to trigger halt.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-num">Role 04</div>
+      <div class="arch-title">Bridge Feed</div>
+      <p class="arch-body">Handles local state exchange and event movement across the atomic file-based bus. All inter-role communication flows through the bus. No direct inter-process communication. No shared memory. No network socket. State is written atomically — write to temp, delete old, rename temp — ensuring no partial state is ever read.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WATCHDOG -->
+<section style="background: var(--off);">
+  <div class="section-label">Watchdog Supervisor</div>
+  <div class="two-col reveal">
+    <div>
+      <h2>The parent.<br><em>The enforcer.</em></h2>
+      <p>The PowerShell 5.1 watchdog is the top-level supervisor. It owns role lifecycle — starting, monitoring, and stopping all four Python roles. It performs the integrity check on every cycle, consuming the SHA-256 manifest and comparing against live file hashes.</p>
+      <p>When a trust condition fails, the watchdog executes the halt sequence. It stops roles in order, writes the halt latch to the Master USB, persists the manifest SHA-256, and emits verified log events. No role is permitted to survive a halt except the Master Probe, which continues as a forensic recorder.</p>
+      <p>The watchdog does not fail open. If the halt latch cannot be written, the system does not proceed. Every exit path through the supervisor is accounted for.</p>
+    </div>
+    <div>
+      <table class="spec-table">
+        <thead><tr><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Runtime</td><td>PowerShell 5.1 — Windows native, no external dependencies</td></tr>
+          <tr><td>Role management</td><td>Process spawning with PID tracking and alive verification</td></tr>
+          <tr><td>Integrity check</td><td>SHA-256 manifest comparison on every supervisory cycle</td></tr>
+          <tr><td>Halt latch</td><td>Written to Master USB — persists across reboot</td></tr>
+          <tr><td>Log events</td><td>Structured, timestamped, UTC — watchdog.log</td></tr>
+          <tr><td>Halt verification</td><td>HALT_STOP_PHASE_VERIFIED + HALT_LATCH_PERSIST_VERIFIED required before SECURITY_HALT_COMPLETE</td></tr>
+          <tr><td>Portable root</td><td>Portable external SSD runtime</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CRYPTOGRAPHIC CHAIN -->
+<section class="chain-section">
+  <div class="section-label">Cryptographic Trust Chain</div>
+  <div class="reveal">
+    <p style="font-size: 16px; color: var(--light); max-width: 640px; line-height: 1.7;">Every authority assertion in Madadah is cryptographically signed and verified. The trust chain runs from the physical USB through the signing certificate to the payload, bound by a monotonic counter and a freshness window. Replay is structurally impossible.</p>
+  </div>
+  <div class="chain reveal">
+    <div class="chain-step">
+      <div class="chain-num">01</div>
+      <div class="chain-content"><strong>Physical USB Presence</strong><span>Master authority token is detected and validated against enrolled hardware identity before any cryptographic operation proceeds.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">02</div>
+      <div class="chain-content"><strong>Certificate Enumeration</strong><span>Pinned certificate material is enumerated from the enrolled authority set. Verification proceeds only when the expected trust material is present.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">03</div>
+      <div class="chain-content"><strong>Payload Construction</strong><span>A canonical payload is assembled in fixed field order. Any deviation invalidates verification.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">04</div>
+      <div class="chain-content"><strong>RSA Signature</strong><span>The payload is signed with the enrolled authority key and written to the authority file on the physical token.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">05</div>
+      <div class="chain-content"><strong>Watchdog Verification</strong><span>The watchdog reconstructs the canonical payload and verifies the signature against the enrolled public certificate before accepting authority state.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">06</div>
+      <div class="chain-content"><strong>Monotonic Counter + Freshness</strong><span>Monotonic counters and a bounded freshness window prevent replay and stale authorization.</span></div>
+    </div>
+    <div class="chain-step">
+      <div class="chain-num">07</div>
+      <div class="chain-content"><strong>Clearance Binding</strong><span>The secondary clearance token is verified against enrolled hardware identifiers. Substitution is rejected.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- HALT LATCH -->
+<section>
+  <div class="section-label">Halt Latch Architecture</div>
+  <div class="two-col reveal">
+    <div>
+      <h2>Written once.<br><em>Cleared only by proof.</em></h2>
+      <p>When a halt condition is triggered, the watchdog writes a halt latch file to the Master USB. This file contains a halt ID derived from the canonical string <code>schema|halt_timestamp_utc|halt_reason</code>, the manifest SHA-256 at the time of halt, and a UTC timestamp.</p>
+      <p>The latch survives system reboot, service restart, and process churn. It is stored on the physical Master USB — not on the host machine. If the host is rebooted without the Master USB present, the latch cannot be cleared.</p>
+      <p>Clearing the latch requires both physical tokens, a fresh cryptographically signed clearance, and successful verification against the enrolled Clearance USB hardware binding. No software path exists to clear the latch without physical presence.</p>
+    </div>
+    <div>
+      <table class="spec-table">
+        <thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>halt_id</td><td>SHA-256 of canonical halt string. Unique per halt event.</td></tr>
+          <tr><td>halt_timestamp_utc</td><td>UTC timestamp of halt. Bound to clearance freshness window.</td></tr>
+          <tr><td>halt_reason</td><td>Enumerated cause — authority failure, integrity failure, health failure.</td></tr>
+          <tr><td>manifest_sha256</td><td>SHA-256 of the 10-file manifest at halt time. Persisted for signing station use.</td></tr>
+          <tr><td>instance_id</td><td>Machine-bound UUID. Clearance must match this instance.</td></tr>
+          <tr><td>latch storage</td><td>Persistent halt record on the Master USB only.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PORTABLE -->
+<section style="background: var(--off);">
+  <div class="section-label">Portable Deployment</div>
+  <div class="two-col reveal">
+    <div>
+      <h2>The authority<br><em>travels with you.</em></h2>
+      <p>Madadah is designed to run from an external SSD. The entire engine — watchdog, roles, bus, logs, and manifest — lives on the external drive. The Master USB carries the cryptographic authority. Together they form a self-contained, portable security supervisor that can be deployed to any Windows host.</p>
+      <p>There is no installation. There is no registry dependency. There is no cloud activation. Plug in the external SSD and the Master USB, start the stack, and Madadah enforces from that moment forward.</p>
+      <p>Remove either device and the response is immediate and deterministic. The system halts. It stays halted. Authority must be physically re-established to resume.</p>
+    </div>
+    <div>
+      <table class="spec-table">
+        <thead><tr><th>Component</th><th>Location</th></tr></thead>
+        <tbody>
+          <tr><td>Engine root</td><td>External SSD runtime root</td></tr>
+          <tr><td>Watchdog</td><td>Local parent supervisor</td></tr>
+          <tr><td>Role scripts</td><td>Local supervision roles</td></tr>
+          <tr><td>Bus / IPC</td><td>Atomic local JSON bus</td></tr>
+          <tr><td>Logs</td><td>Local watchdog and evidence logs</td></tr>
+          <tr><td>Master authority</td><td>Master USB token</td></tr>
+          <tr><td>Halt latch</td><td>Persistent halt record on the Master USB</td></tr>
+          <tr><td>Clearance token</td><td>Secondary clearance USB token</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-brand">Madadah Systems &mdash; Deterministic fail-closed control</span>
+  <div class="footer-nav">
+    <a href="../index.html">Home</a>
+    <a href="index.html">Architecture</a>
+    <a href="../evidence/index.html">Evidence</a>
+    <a href="../about/index.html">About</a>
+  </div>
+  <span class="footer-right"><a href="mailto:contact@madadh.systems">contact@madadh.systems</a></span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, {threshold: 0.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
