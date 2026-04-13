@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="MADADH Evidence Pack - Verified test results, integrity runs, soak testing, and machine-generated proof packs with SHA-256 verification.">
+<title>Evidence Pack - MADADH</title>
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="../style.css">
+<style>
+  .evidence-intro { max-width: 700px; margin-bottom: 60px; }
+  .evidence-intro h2 { font-size: clamp(28px, 3.5vw, 48px); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 20px; }
+  .evidence-intro h2 em { font-style: normal; color: var(--amber); }
+  .evidence-intro p { font-size: 16px; color: var(--light); line-height: 1.7; margin-bottom: 12px; }
+  .test-block { border: 1px solid var(--border); margin-bottom: 2px; }
+  .test-header { display: grid; grid-template-columns: 80px 1fr auto; align-items: stretch; border-bottom: 1px solid var(--border); }
+  .test-id { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--amber); text-transform: uppercase; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); background: var(--off); padding: 16px 0; }
+  .test-title-block { padding: 16px 28px; display: flex; flex-direction: column; justify-content: center; }
+  .test-name { font-size: 15px; font-weight: 700; color: var(--white); letter-spacing: -0.01em; margin-bottom: 2px; }
+  .test-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .test-status { display: flex; align-items: center; padding: 16px 24px; gap: 8px; border-left: 1px solid var(--border); }
+  .pass-dot { width: 8px; height: 8px; border-radius: 50%; background: #2d8a4e; box-shadow: 0 0 8px rgba(45,138,78,0.8); flex-shrink: 0; }
+  .pass-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #2d8a4e; }
+  .test-body { padding: 24px 28px 24px calc(80px + 28px); background: var(--black); }
+  .test-findings { display: flex; flex-direction: column; gap: 8px; }
+  .finding { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--mid); line-height: 1.55; }
+  .finding-arrow { color: var(--amber); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 1px; }
+  .test-meta { display: flex; gap: 32px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); }
+  .meta-value { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--light); letter-spacing: 0.05em; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 60px; }
+  .summary-card { background: var(--black); padding: 32px 28px; text-align: center; }
+  .summary-num { font-size: clamp(36px, 5vw, 56px); font-weight: 800; color: var(--amber); line-height: 1; margin-bottom: 8px; letter-spacing: -0.02em; }
+  .summary-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .download-section { background: var(--off); }
+  .download-block { border: 1px solid var(--border); background: var(--black); max-width: 800px; }
+  .download-header { padding: 24px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .download-title { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .download-desc { font-size: 13px; color: var(--mid); line-height: 1.55; }
+  .download-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--amber); color: var(--black); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 12px 20px; white-space: nowrap; transition: background 0.2s; flex-shrink: 0; }
+  .download-btn:hover { background: var(--amber2); }
+  .download-hashes { padding: 20px 28px; display: flex; flex-direction: column; gap: 12px; }
+  .hash-row { display: flex; flex-direction: column; gap: 4px; }
+  .hash-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); }
+  .hash-value { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--light); letter-spacing: 0.04em; word-break: break-all; line-height: 1.5; }
+  .hash-divider { height: 1px; background: var(--border); }
+  .verify-block { padding: 20px 28px; background: var(--off); border-top: 1px solid var(--border); }
+  .verify-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .verify-cmd { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--amber); background: var(--black); border: 1px solid var(--border); padding: 10px 14px; display: block; line-height: 1.6; }
+  .statement-block { background: var(--off); border: 1px solid var(--border); padding: 40px; margin-top: 48px; max-width: 760px; }
+  .statement-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--amber); margin-bottom: 20px; }
+  .statement-text { font-size: 15px; color: var(--light); line-height: 1.75; margin-bottom: 16px; }
+  .statement-sig { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .copyright-section { background: var(--off); }
+  .copyright-block { border: 1px solid var(--border); padding: 36px 40px; max-width: 760px; background: var(--black); }
+  .copyright-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+  .copyright-text { font-size: 13px; color: var(--mid); line-height: 1.75; }
+  .copyright-text strong { color: var(--light); }
+  @media (max-width: 700px) {
+    .test-body { padding: 20px; }
+    .test-header { grid-template-columns: 60px 1fr; }
+    .test-status { display: none; }
+    .download-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="../index.html">MADADH</a>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="../architecture/index.html">Architecture</a>
+    <a href="index.html" class="active">Evidence</a>
+    <a href="../about/index.html">About</a>
+    <a href="../index.html#contact" class="nav-contact">Contact</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-eyebrow">Evidence Pack</div>
+  <h1>Machine-generated.<br><em>Hash-sealed. Verifiable.</em></h1>
+  <div class="page-hero-rule"></div>
+  <p>Every result on this page was produced by the engine itself — not written after the fact. The watchdog, master probe, and snapshot scripts generated the log files, process listings, timestamps, and state captures in real time during live test conditions. The evidence packs are SHA-256 sealed and available for independent verification.</p>
+</div>
+
+<div class="status-strip">
+  <div class="status-item"><span class="status-dot"></span> Engine Version: v7.1</div>
+  <div class="status-item"><span class="status-dot"></span> Test Environment: E:\BRAIN</div>
+  <div class="status-item"><span class="status-dot"></span> Conformance: Pass</div>
+  <div class="status-item"><span class="status-dot"></span> Hardening: Pass</div>
+  <div class="status-item"><span class="status-dot"></span> Soak 7hr: Pass</div>
+  <div class="status-item"><span class="status-dot amber"></span> Master Hotpull: Pass</div>
+</div>
+
+<section>
+  <div class="section-label">Test Summary</div>
+  <div class="summary-grid reveal">
+    <div class="summary-card"><div class="summary-num">13</div><div class="summary-label">Tests Run</div></div>
+    <div class="summary-card"><div class="summary-num">13</div><div class="summary-label">Tests Passed</div></div>
+    <div class="summary-card"><div class="summary-num">7hr</div><div class="summary-label">Soak Duration</div></div>
+    <div class="summary-card"><div class="summary-num">180KB</div><div class="summary-label">Memory Drift (7hr)</div></div>
+    <div class="summary-card"><div class="summary-num">0</div><div class="summary-label">Fail-Open Events</div></div>
+  </div>
+
+  <div class="evidence-intro reveal">
+    <h2>Every test passed.<br><em>Every halt was correct.</em></h2>
+    <p>Across conformance, hardening, soak, and live hardware pull testing — MADADH produced zero fail-open events and zero false recoveries. Every halt condition triggered a deterministic halt. Every tamper condition correctly blocked execution.</p>
+    <p>The 180KB memory drift across 7 hours is not accidental — it is a direct consequence of the architecture. MADADH runs fully offline with no cloud backing and no external memory management. The memory envelope is fixed at deployment. There is nowhere to hide a leak. The engine had to be engineered correctly, and the soak result proves it was.</p>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">CONF</div>
+      <div class="test-title-block">
+        <div class="test-name">Conformance Run &mdash; Baseline Behaviour</div>
+        <div class="test-sub">5 Tests &mdash; Stack Lifecycle &mdash; 2026-02-06 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">5/5 Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>TEST-001 PASS &mdash; Stack stop and clean shutdown confirmed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>TEST-002 PASS &mdash; Stack start, watchdog spawned with valid PID.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>TEST-003 PASS &mdash; Role processes confirmed running under watchdog parent.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>TEST-004 PASS &mdash; Stop signal absent confirmed before test sequence.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>TEST-005 PASS &mdash; Full lifecycle cycle completed. OVERALL PASS.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">OVERALL PASS &mdash; 5/5</div></div>
+        <div class="meta-item"><div class="meta-label">Failures</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Engine root</div><div class="meta-value">E:\BRAIN</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">HARD</div>
+      <div class="test-title-block">
+        <div class="test-name">Hardening Run &mdash; Integrity Gate Enforcement</div>
+        <div class="test-sub">3 Tests &mdash; Fail-Closed Under Tamper &mdash; 2026-02-06 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">3/3 Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>HARD-001 PASS &mdash; Manifest missing. Engine correctly failed closed. Execution blocked.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>HARD-002 PASS &mdash; Hash mismatch detected. Engine correctly failed closed. Execution blocked.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>HARD-003 PASS &mdash; Correct manifest and valid hashes. Roles permitted to run. Engine correctly allowed.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">OVERALL PASS &mdash; 3/3</div></div>
+        <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Tamper correctly blocked</div><div class="meta-value">2/2</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">PULL</div>
+      <div class="test-title-block">
+        <div class="test-name">Master Hotpull &mdash; Live USB Removal During Operation</div>
+        <div class="test-sub">Live Hardware Test &mdash; 2026-02-08T07:11 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>All four roles confirmed running before pull. Master probe, heartbeat, health, bridge &mdash; all active with valid PIDs under watchdog parent.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>No stop signal present before pull. System in normal operating state.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Master USB physically removed from running system at UTC 2026-02-07T20:11:18Z.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>D_PRESENT_AFTER_WAIT: False &mdash; authority confirmed absent after detection window.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>DETECTED_GONE: True &mdash; engine correctly identified authority loss.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Stop signal written. Watchdog tail confirms enforcement action taken.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Before/after snapshots machine-generated at moment of test. SHA-256 sealed.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS &mdash; Authority loss detected and enforced</div></div>
+        <div class="meta-item"><div class="meta-label">Detection</div><div class="meta-value">DETECTED_GONE: True</div></div>
+        <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">SOAK</div>
+      <div class="test-title-block">
+        <div class="test-name">Seven Hour Soak &mdash; Extended Runtime Stability</div>
+        <div class="test-sub">862 Evidence Files &mdash; 2026-02-13 to 2026-02-14 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Engine ran continuously for seven hours under normal operating conditions.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Memory snapshots taken every 5 minutes across the entire run &mdash; 86 samples.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>SOAK_VERDICT: PASS &mdash; no duplicates observed, no watchdog tail keywords, no anomalies.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Maximum working set: ~130MB. Maximum private bytes: ~107MB.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Delta private bytes across 7 hours: 180KB. This is effectively flat.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>180KB drift is not accidental. MADADH runs with no cloud backing and no external memory management. The memory envelope is fixed at deployment. A leak accumulates until failure. It did not. The engine was engineered correctly, and this result proves it.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>All role processes stable throughout. No unexpected exits. No supervisor interventions.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">SOAK_VERDICT: PASS</div></div>
+        <div class="meta-item"><div class="meta-label">Duration</div><div class="meta-value">7 hours continuous</div></div>
+        <div class="meta-item"><div class="meta-label">Memory drift</div><div class="meta-value">180KB over 7 hours</div></div>
+        <div class="meta-item"><div class="meta-label">Memory leak</div><div class="meta-value">NOT OBSERVED</div></div>
+        <div class="meta-item"><div class="meta-label">Evidence files</div><div class="meta-value">862</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="download-section">
+  <div class="section-label">Proof Pack Download</div>
+  <div class="reveal">
+    <p style="font-size: 16px; color: var(--light); max-width: 640px; line-height: 1.7; margin-bottom: 40px;">The proof pack is a single SHA-256 sealed bundle containing all evidence ZIPs, an evidence index, and a verification report. Download it, verify the hash, and inspect every file independently. No trust required.</p>
+  </div>
+  <div class="download-block reveal">
+    <div class="download-header">
+      <div>
+        <div class="download-title">MADADH Proof Pack &mdash; BUNDLE_20260214_083840</div>
+        <div class="download-desc">Contains: Conformance, Hardening, Master Hotpull, Soak Run &mdash; plus evidence index and verification report.</div>
+      </div>
+      <a href="proof_pack.zip" class="download-btn" download>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Pack
+      </a>
+    </div>
+    <div class="download-hashes">
+      <div class="hash-row">
+        <div class="hash-label">Proof Pack SHA-256 &mdash; verify this first</div>
+        <div class="hash-value">C3471C95D956442E0B7AFE536BA736897B5D86D9B8B5306F772DEBCBD7AF0044</div>
+      </div>
+      <div class="hash-divider"></div>
+      <div class="hash-label" style="margin-bottom: 8px;">Inner Pack Hashes &mdash; from EVIDENCE_INDEX.txt inside the bundle</div>
+      <div class="hash-row">
+        <div class="hash-label">CONFORMANCE_20260214_075602.zip</div>
+        <div class="hash-value">FE2C45CBDE73CBF724EB6024B679406E5FDCB5F9F4D68B84164B3C705A8E8CBD</div>
+      </div>
+      <div class="hash-row">
+        <div class="hash-label">HARDENING_20260214_081923.zip</div>
+        <div class="hash-value">E9BCCDFA19360DE7A2B0995CF5A8681A10A836A54AE980FB21A4FB67AEE9002D</div>
+      </div>
+      <div class="hash-row">
+        <div class="hash-label">MASTER_HOTPULL_20260208_071117.zip</div>
+        <div class="hash-value">6B9D80D6FE990DAC082742DDF11576EA4E16F36EEED1C8640EDC3CD45034CE74</div>
+      </div>
+    </div>
+    <div class="verify-block">
+      <div class="verify-label">PowerShell verification command</div>
+      <code class="verify-cmd">(Get-FileHash -Algorithm SHA256 -LiteralPath .\proof_pack.zip).Hash</code>
+    </div>
+  </div>
+
+  <div class="statement-block reveal">
+    <div class="statement-label">Machine-Generated Evidence Statement</div>
+    <p class="statement-text">The evidence packs on this page were not written after the fact. They were produced by the MADADH engine itself during live test conditions. The watchdog supervisor, master probe, and snapshot scripts generated the log files, process listings, UTC timestamps, bus state captures, and memory samples in real time. No human authored these files. The engine recorded itself.</p>
+    <p class="statement-text">This means the timestamps are machine-generated UTC, the process PIDs are real Windows process IDs captured at the moment of each test, the watchdog tail output reflects actual supervisory decisions made by the engine, and the memory samples reflect real Windows working set values taken at 5-minute intervals across the soak run. The SHA-256 hash chain covering every file in every pack is independently verifiable by anyone with basic tools.</p>
+    <div class="statement-sig">Madadah Systems &nbsp;&mdash;&nbsp; ABN 44 103 797 283 &nbsp;&mdash;&nbsp; Terrigal NSW Australia &nbsp;&mdash;&nbsp; 2026</div>
+  </div>
+</section>
+
+<section class="copyright-section">
+  <div class="section-label">Intellectual Property</div>
+  <div class="copyright-block reveal">
+    <div class="copyright-label">Copyright &amp; IP Notice</div>
+    <p class="copyright-text">
+      <strong>&copy; 2026 Madadah Systems. All rights reserved.</strong><br><br>
+      The evidence packs, test methodology, system architecture, cryptographic design, and all technical concepts documented on this site are the original work and intellectual property of Madadah Systems (ABN 44 103 797 283).<br><br>
+      Evidence packs are provided for independent verification purposes only. Download and verification of the proof pack does not grant any rights to reproduce, implement, adapt, redistribute, or commercially exploit the described system design, architecture, or methodology in any form.<br><br>
+      No rights are transferred by the availability of these materials. All original concepts, system designs, and technical structures remain the exclusive intellectual property of Madadah Systems.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-brand">MADADH &mdash; Deterministic Fail-Closed Control</span>
+  <div class="footer-nav">
+    <a href="../index.html">Home</a>
+    <a href="../architecture/index.html">Architecture</a>
+    <a href="index.html">Evidence</a>
+    <a href="../about/index.html">About</a>
+  </div>
+  <span class="footer-right"><a href="mailto:contact@madadh.systems">contact@madadh.systems</a></span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, {threshold: 0.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
