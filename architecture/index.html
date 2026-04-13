@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<meta name="description" content="Madadah architecture: four-role local supervision, physical authority, persistent halt enforcement, and controlled recovery.">
-<link rel="canonical" href="https://madadh.systems/architecture/">
-<title>Madadah Architecture</title>
+<meta name="description" content="MADADH Architecture - Four-role supervision model, cryptographic enforcement, USB hardware binding, and fail-closed halt latch design.">
+<title>Architecture - MADADH</title>
 <script>document.documentElement.classList.add('js');</script>
 <link rel="stylesheet" href="../style.css">
 <style>
@@ -186,7 +185,7 @@
 <body>
 
 <header>
-  <a class="logo" href="../index.html">Madadah</a>
+  <a class="logo" href="../index.html">MADADH</a>
   <nav>
     <a href="../index.html">Home</a>
     <a href="index.html" class="active">Architecture</a>
@@ -200,7 +199,7 @@
   <div class="page-hero-eyebrow">System Architecture</div>
   <h1>Built to enforce.<br><em>Not to negotiate.</em></h1>
   <div class="page-hero-rule"></div>
-  <p>Madadah is a four-role hardware-bound control system running natively on Windows. Every design decision prioritises fail-closed behaviour, physical authority, and deterministic state. There is no cloud dependency, no remote control plane, and no software path that bypasses physical presence.</p>
+  <p>MADADH is a four-role hardware-bound supervision engine running natively on Windows. Every design decision prioritises fail-closed behaviour, physical authority, and deterministic state. There is no cloud. There is no network dependency. There is no software path that bypasses physical presence.</p>
 </div>
 
 <div class="status-strip">
@@ -259,7 +258,7 @@
           <tr><td>Halt latch</td><td>Written to Master USB — persists across reboot</td></tr>
           <tr><td>Log events</td><td>Structured, timestamped, UTC — watchdog.log</td></tr>
           <tr><td>Halt verification</td><td>HALT_STOP_PHASE_VERIFIED + HALT_LATCH_PERSIST_VERIFIED required before SECURITY_HALT_COMPLETE</td></tr>
-          <tr><td>Portable root</td><td>Portable external SSD runtime</td></tr>
+          <tr><td>Portable root</td><td>E:\BRAIN (test) — external SSD (production)</td></tr>
         </tbody>
       </table>
     </div>
@@ -270,36 +269,36 @@
 <section class="chain-section">
   <div class="section-label">Cryptographic Trust Chain</div>
   <div class="reveal">
-    <p style="font-size: 16px; color: var(--light); max-width: 640px; line-height: 1.7;">Every authority assertion in Madadah is cryptographically signed and verified. The trust chain runs from the physical USB through the signing certificate to the payload, bound by a monotonic counter and a freshness window. Replay is structurally impossible.</p>
+    <p style="font-size: 16px; color: var(--light); max-width: 640px; line-height: 1.7;">Every authority assertion in MADADH is cryptographically signed and verified. The trust chain runs from the physical USB through the signing certificate to the payload, bound by a monotonic counter and a freshness window. Replay is structurally impossible.</p>
   </div>
   <div class="chain reveal">
     <div class="chain-step">
       <div class="chain-num">01</div>
-      <div class="chain-content"><strong>Physical USB Presence</strong><span>Master authority token is detected and validated against enrolled hardware identity before any cryptographic operation proceeds.</span></div>
+      <div class="chain-content"><strong>Physical USB Presence</strong><span>Master USB detected by volume label MASTER and WMI serial binding. Hardware identity confirmed before any cryptographic operation proceeds.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">02</div>
-      <div class="chain-content"><strong>Certificate Enumeration</strong><span>Pinned certificate material is enumerated from the enrolled authority set. Verification proceeds only when the expected trust material is present.</span></div>
+      <div class="chain-content"><strong>Certificate Enumeration</strong><span>PFX enumerated by SHA1 thumbprint <code>4859C5E9780B0D63951D01315E87B11EEEF8F016</code>. Root CA and code signing certs distinguished. Correct key extracted via CNG-native RSA path.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">03</div>
-      <div class="chain-content"><strong>Payload Construction</strong><span>A canonical payload is assembled in fixed field order. Any deviation invalidates verification.</span></div>
+      <div class="chain-content"><strong>Payload Construction</strong><span>Canonical payload string assembled: <code>schema|ts_utc|timestamp|pid|root|master_present|drive|counter</code>. Field order is fixed. Any deviation invalidates verification.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">04</div>
-      <div class="chain-content"><strong>RSA Signature</strong><span>The payload is signed with the enrolled authority key and written to the authority file on the physical token.</span></div>
+      <div class="chain-content"><strong>RSA Signature</strong><span>Payload signed with Master private key using NCryptSignHash via CNG. Signature is base64-encoded and written to the authority file on the Master USB.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">05</div>
-      <div class="chain-content"><strong>Watchdog Verification</strong><span>The watchdog reconstructs the canonical payload and verifies the signature against the enrolled public certificate before accepting authority state.</span></div>
+      <div class="chain-content"><strong>Watchdog Verification</strong><span>Watchdog reads authority file, reconstructs canonical payload, verifies RSA signature against Master public certificate using RSACertificateExtensions.GetRSAPublicKey(). Legacy CAPI path rejected.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">06</div>
-      <div class="chain-content"><strong>Monotonic Counter + Freshness</strong><span>Monotonic counters and a bounded freshness window prevent replay and stale authorization.</span></div>
+      <div class="chain-content"><strong>Monotonic Counter + Freshness</strong><span>Nonce ledger on Master USB tracks every used request_id. Clearance valid only within 600-second freshness window. Expired or replayed authorization structurally rejected.</span></div>
     </div>
     <div class="chain-step">
       <div class="chain-num">07</div>
-      <div class="chain-content"><strong>Clearance Binding</strong><span>The secondary clearance token is verified against enrolled hardware identifiers. Substitution is rejected.</span></div>
+      <div class="chain-content"><strong>Clearance Binding</strong><span>Clearance USB verified by volume label MADADH_CLEAR, WMI serial <code>560570C138EE7078</code>, and volume serial <code>F2B9E36B</code>. Enrolled at <code>2026-03-08T05:27:01Z</code>. Cannot be substituted.</span></div>
     </div>
   </div>
 </section>
@@ -323,7 +322,7 @@
           <tr><td>halt_reason</td><td>Enumerated cause — authority failure, integrity failure, health failure.</td></tr>
           <tr><td>manifest_sha256</td><td>SHA-256 of the 10-file manifest at halt time. Persisted for signing station use.</td></tr>
           <tr><td>instance_id</td><td>Machine-bound UUID. Clearance must match this instance.</td></tr>
-          <tr><td>latch storage</td><td>Persistent halt record on the Master USB only.</td></tr>
+          <tr><td>latch path</td><td>D:\madadh_master\halt.latch — Master USB only.</td></tr>
         </tbody>
       </table>
     </div>
@@ -336,22 +335,22 @@
   <div class="two-col reveal">
     <div>
       <h2>The authority<br><em>travels with you.</em></h2>
-      <p>Madadah is designed to run from an external SSD. The entire engine — watchdog, roles, bus, logs, and manifest — lives on the external drive. The Master USB carries the cryptographic authority. Together they form a self-contained, portable security supervisor that can be deployed to any Windows host.</p>
-      <p>There is no installation. There is no registry dependency. There is no cloud activation. Plug in the external SSD and the Master USB, start the stack, and Madadah enforces from that moment forward.</p>
+      <p>MADADH is designed to run from an external SSD. The entire engine — watchdog, roles, bus, logs, and manifest — lives on the external drive. The Master USB carries the cryptographic authority. Together they form a self-contained, portable security supervisor that can be deployed to any Windows host.</p>
+      <p>There is no installation. There is no registry dependency. There is no cloud activation. Plug in the external SSD and the Master USB, start the stack, and MADADH enforces from that moment forward.</p>
       <p>Remove either device and the response is immediate and deterministic. The system halts. It stays halted. Authority must be physically re-established to resume.</p>
     </div>
     <div>
       <table class="spec-table">
         <thead><tr><th>Component</th><th>Location</th></tr></thead>
         <tbody>
-          <tr><td>Engine root</td><td>External SSD runtime root</td></tr>
-          <tr><td>Watchdog</td><td>Local parent supervisor</td></tr>
-          <tr><td>Role scripts</td><td>Local supervision roles</td></tr>
-          <tr><td>Bus / IPC</td><td>Atomic local JSON bus</td></tr>
-          <tr><td>Logs</td><td>Local watchdog and evidence logs</td></tr>
-          <tr><td>Master authority</td><td>Master USB token</td></tr>
-          <tr><td>Halt latch</td><td>Persistent halt record on the Master USB</td></tr>
-          <tr><td>Clearance token</td><td>Secondary clearance USB token</td></tr>
+          <tr><td>Engine root</td><td>External SSD — E:\BRAIN (test) / production SSD</td></tr>
+          <tr><td>Watchdog</td><td>E:\BRAIN\watchdog\watchdog.ps1</td></tr>
+          <tr><td>Role scripts</td><td>E:\BRAIN\sentinel\ and E:\BRAIN\roles\</td></tr>
+          <tr><td>Bus / IPC</td><td>E:\BRAIN\bus\ — atomic JSON files</td></tr>
+          <tr><td>Logs</td><td>E:\BRAIN\logs\watchdog.log</td></tr>
+          <tr><td>Master authority</td><td>D:\ — Master USB (volume label: MASTER)</td></tr>
+          <tr><td>Halt latch</td><td>D:\madadh_master\halt.latch</td></tr>
+          <tr><td>Clearance token</td><td>F:\ — Clearance USB (volume label: MADADH_CLEAR)</td></tr>
         </tbody>
       </table>
     </div>
@@ -359,7 +358,7 @@
 </section>
 
 <footer>
-  <span class="footer-brand">Madadah Systems &mdash; Deterministic fail-closed control</span>
+  <span class="footer-brand">MADADH &mdash; Deterministic Fail-Closed Control</span>
   <div class="footer-nav">
     <a href="../index.html">Home</a>
     <a href="index.html">Architecture</a>
