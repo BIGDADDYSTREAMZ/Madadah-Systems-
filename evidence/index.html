@@ -97,8 +97,8 @@
 <section>
   <div class="section-label">Test Summary</div>
   <div class="summary-grid reveal">
-    <div class="summary-card"><div class="summary-num">13</div><div class="summary-label">Tests Run</div></div>
-    <div class="summary-card"><div class="summary-num">13</div><div class="summary-label">Tests Passed</div></div>
+    <div class="summary-card"><div class="summary-num">16</div><div class="summary-label">Tests Run</div></div>
+    <div class="summary-card"><div class="summary-num">16</div><div class="summary-label">Tests Passed</div></div>
     <div class="summary-card"><div class="summary-num">7hr</div><div class="summary-label">Soak Duration</div></div>
     <div class="summary-card"><div class="summary-num">180KB</div><div class="summary-label">Memory Drift (7hr)</div></div>
     <div class="summary-card"><div class="summary-num">0</div><div class="summary-label">Fail-Open Events</div></div>
@@ -187,6 +187,34 @@
 
   <div class="test-block reveal">
     <div class="test-header">
+      <div class="test-id">CHAOS</div>
+      <div class="test-title-block">
+        <div class="test-name">Chaos Run &mdash; Fault Injection Under Live Operation</div>
+        <div class="test-sub">3 Cases &mdash; Suite A Unattended Non-Halting &mdash; 2026-03-28T14:18 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">3/3 Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>CH-NH-001 PASS &mdash; Invalid JSON injected directly into bus file (bridge_feed.json). Engine absorbed the fault. FINAL_STATE: HEALTHY.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>CH-NH-002 PASS &mdash; Truncated JSON injected into bus file (bridge_feed.json). Engine absorbed the fault. FINAL_STATE: HEALTHY.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>CH-NH-003 PASS &mdash; Bridge feed process forcibly killed (PID 10096). Engine detected loss and recovered. FINAL_STATE: HEALTHY.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>All three cases: MATCHED_EXPECTED: YES, EVIDENCE_COMPLETE: YES. FINAL_VERDICT: PASS.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>FINAL_ENVIRONMENT_STATE: HEALTHY. ABORT_STAGE: NONE. Engine completed full suite without intervention.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Before/after bus snapshots, process snapshots, and watchdog tails machine-generated for every case.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">FINAL_VERDICT: PASS</div></div>
+        <div class="meta-item"><div class="meta-label">Cases</div><div class="meta-value">3/3 PASS</div></div>
+        <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+        <div class="meta-item"><div class="meta-label">Environment state</div><div class="meta-value">HEALTHY</div></div>
+        <div class="meta-item"><div class="meta-label">Abort stage</div><div class="meta-value">NONE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
       <div class="test-id">SOAK</div>
       <div class="test-title-block">
         <div class="test-name">Seven Hour Soak &mdash; Extended Runtime Stability</div>
@@ -254,6 +282,29 @@
     <div class="verify-block">
       <div class="verify-label">PowerShell verification command</div>
       <code class="verify-cmd">(Get-FileHash -Algorithm SHA256 -LiteralPath .\proof_pack.zip).Hash</code>
+    </div>
+  </div>
+
+  <div class="download-block reveal" style="margin-top: 24px;">
+    <div class="download-header">
+      <div>
+        <div class="download-title">Chaos Run &mdash; CHAOS_RUN_20260328_141801Z</div>
+        <div class="download-desc">3 fault injection cases — invalid JSON, truncated JSON, process kill. All PASS. Machine-generated evidence with full before/after snapshots.</div>
+      </div>
+      <a href="CHAOS_RUN_20260328_141801Z.zip" class="download-btn" download>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Chaos Pack
+      </a>
+    </div>
+    <div class="download-hashes">
+      <div class="hash-row">
+        <div class="hash-label">Chaos Pack SHA-256</div>
+        <div class="hash-value">006726ABA9CA1C982840088763B8693A028DB29A26C53CC3170D33BFB18DE53F</div>
+      </div>
+    </div>
+    <div class="verify-block">
+      <div class="verify-label">PowerShell verification command</div>
+      <code class="verify-cmd">(Get-FileHash -Algorithm SHA256 -LiteralPath .\CHAOS_RUN_20260328_141801Z.zip).Hash</code>
     </div>
   </div>
 

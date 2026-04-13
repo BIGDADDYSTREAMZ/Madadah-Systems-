@@ -4,32 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<meta name="description" content="Madadah Systems builds deterministic, offline fail-closed control for protected Windows runtimes, using physical authority, persistent halt enforcement, and controlled recovery.">
-<link rel="canonical" href="https://madadh.systems/">
-<meta property="og:title" content="Madadah Systems | Deterministic fail-closed control">
-<meta property="og:description" content="Deterministic, offline fail-closed control for protected Windows runtimes.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://madadh.systems/">
-<title>Madadah Systems | Deterministic fail-closed control</title>
+<meta name="description" content="MADADH - Deterministic fail-closed hardware security supervisor for Windows. Portable, offline, physical USB authority. No software override.">
+<title>MADADH - Deterministic Fail-Closed Control</title>
 <script>document.documentElement.classList.add('js');</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Madadah Systems",
-  "alternateName": ["Madadah", "madadh.systems"],
-  "url": "https://madadh.systems/"
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Madadah Systems",
-  "url": "https://madadh.systems/",
-  "email": "contact@madadh.systems"
-}
-</script>
 <link rel="stylesheet" href="style.css">
 <style>
   .hero {
@@ -418,7 +395,7 @@
 <body>
 
 <header>
-  <a class="logo" href="index.html" aria-label="Madadah home">Madadah</a>
+  <a class="logo" href="index.html" aria-label="MADADH home">MADADH</a>
   <nav>
     <a href="index.html" class="active">Home</a>
     <a href="architecture/index.html">Architecture</a>
@@ -431,12 +408,12 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid-line"></div>
-  <div class="hero-corner tl">Madadah-CAP-01 &nbsp;/&nbsp; v1.0</div>
+  <div class="hero-corner tl">MADADH-CAP-01 &nbsp;/&nbsp; v1.0</div>
   <div class="hero-corner tr">Controlled External Use</div>
   <div class="hero-corner bl">madadh.systems</div>
   <div class="hero-corner br">Fail-Closed | Portable | Local | Deterministic</div>
 
-  <div class="hero-eyebrow">Deterministic fail-closed control for protected runtimes</div>
+  <div class="hero-eyebrow">Deterministic Fail-Closed Control System</div>
 
   <h1 class="hero-title">
     When trust<br>breaks,<br><em>it stops.</em>
@@ -445,7 +422,9 @@
   <div class="hero-rule"></div>
 
   <p class="hero-sub">
-    <strong>Madadah</strong> is a deterministic, offline control system for protected Windows runtimes. When authority or integrity fails, the runtime <strong>halts deterministically</strong> and stays halted until the correct physical authorities and cryptographic proof are present.
+    MADADH enforces a single hard rule: when authority or integrity fails, the protected runtime
+    <strong>halts deterministically</strong>. It stays halted. It does not resume until the correct
+    physical authorities and cryptographic validation are present.
   </p>
 
   <div class="hero-tags">
@@ -461,16 +440,13 @@
   <div class="hero-actions">
     <a href="#contact" class="btn-primary" onclick="event.preventDefault();document.getElementById('contact').scrollIntoView({behavior:'smooth'});">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
-      Discuss a Pilot
+      Get in Touch
     </a>
     <a href="evidence/index.html" class="btn-secondary">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20,6 9,17 4,12"/></svg>
       View Evidence Pack
     </a>
   </div>
-  <p style="margin-top: 22px; max-width: 760px; color: var(--muted); font-size: 14px; line-height: 1.7;">
-    <strong style="color: var(--light);">Current status:</strong> Madadah is built and evidenced, and is currently available for a controlled pilot. It is not presently deployed under an active customer lease.
-  </p>
 </section>
 
 <!-- STATUS STRIP -->
@@ -488,12 +464,12 @@
   <div class="section-label">Core Principle</div>
   <div class="principle-inner reveal">
     <p class="principle-text">
-      Madadah is not a convenience layer. It is not a permissive orchestration system.
+      MADADH is not a convenience layer. It is not a permissive orchestration system.
       It is a <span>portable, fail-closed enforcement capability</span> built for environments
       where continued execution under broken trust is unacceptable.
     </p>
     <p class="principle-detail">
-      Most systems fail gracefully. They degrade, retry, and assume. Madadah does none of that.
+      Most systems fail gracefully. They degrade, retry, and assume. MADADH does none of that.
       When a critical trust condition fails, the response is refusal. Persistent refusal.
       The system halts, records that halt in a durable latch, and holds that state until
       the correct physical and cryptographic conditions are satisfied by a human operator
@@ -535,7 +511,7 @@
   <div class="halt-layout">
     <div class="halt-left reveal">
       <h2>Stop. Stay stopped.<br><em>Prove you can restart.</em></h2>
-      <p>Once a halt condition is entered, Madadah records and maintains a persistent latch state. That latch survives reboot, service restart, process churn, and reconnection of any device.</p>
+      <p>Once a halt condition is entered, MADADH records and maintains a persistent latch state. That latch survives reboot, service restart, process churn, and reconnection of any device.</p>
       <p>Return to operation requires two separate physical tokens and cryptographically signed clearance data bound to the specific machine, the specific halt event, and the current recovery window. Nothing else will do.</p>
       <p style="color: var(--amber); font-size: 14px; font-weight: 600; margin-top: 24px;">The master authority token alone is not sufficient. Both tokens must be present.</p>
     </div>
@@ -560,7 +536,7 @@
   <div class="section-label">Verified Behavior</div>
   <div class="verified-intro reveal">
     <h2>Not a claim.<br><em>A demonstrated result.</em></h2>
-    <p>Madadah has been tested end-to-end under live conditions including chaos testing and extended soak runs. The following behaviours have been observed and evidenced, not assumed.</p>
+    <p>MADADH has been tested end-to-end under live conditions including chaos testing and extended soak runs. The following behaviors have been observed and evidenced, not assumed.</p>
   </div>
   <div class="verified-grid reveal">
     <div class="verified-item">
@@ -610,7 +586,7 @@
   <div class="section-label">Supervision Architecture</div>
   <div class="roles-header reveal">
     <h2>Four-role local<br><em>supervision model.</em></h2>
-    <p>Madadah uses a local four-role architecture. State is exchanged through an atomic file-based bus. Supervisory logic is deterministic and locally self-contained. No remote orchestration. No cloud dependency. No ambiguity in decision flow.</p>
+    <p>MADADH uses a local four-role architecture. State is exchanged through an atomic file-based bus. Supervisory logic is deterministic and locally self-contained. No remote orchestration. No cloud dependency. No ambiguity in decision flow.</p>
   </div>
   <table class="roles-table reveal">
     <thead>
@@ -633,7 +609,7 @@
   <div class="cta-inner reveal">
     <div class="cta-eyebrow">Contact</div>
     <h2>If this is relevant<br>to what you protect</h2>
-    <p>Madadah is built, evidenced, and currently available for a controlled pilot. It is not presently deployed under customer lease. If your environment needs a fail-closed control layer with tightly bounded authority and restart conditions, get in touch.</p>
+    <p>MADADH is built for environments where the critical question is not whether a system can keep running, but who is allowed to let it run again. If that is your problem, get in touch.</p>
     <a href="mailto:contact@madadh.systems" class="btn-primary">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
       contact@madadh.systems
@@ -642,7 +618,7 @@
 </section>
 
 <footer>
-  <span class="footer-brand">Madadah Systems &mdash; Deterministic fail-closed control</span>
+  <span class="footer-brand">MADADH &mdash; Deterministic Fail-Closed Control</span>
   <div class="footer-nav">
     <a href="index.html">Home</a>
     <a href="architecture/index.html">Architecture</a>
