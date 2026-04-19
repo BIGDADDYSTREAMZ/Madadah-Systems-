@@ -97,8 +97,8 @@
 <section>
   <div class="section-label">Test Summary</div>
   <div class="summary-grid reveal">
-    <div class="summary-card"><div class="summary-num">16</div><div class="summary-label">Tests Run</div></div>
-    <div class="summary-card"><div class="summary-num">16</div><div class="summary-label">Tests Passed</div></div>
+    <div class="summary-card"><div class="summary-num">17</div><div class="summary-label">Tests Run</div></div>
+    <div class="summary-card"><div class="summary-num">17</div><div class="summary-label">Tests Passed</div></div>
     <div class="summary-card"><div class="summary-num">7hr</div><div class="summary-label">Soak Duration</div></div>
     <div class="summary-card"><div class="summary-num">180KB</div><div class="summary-label">Memory Drift (7hr)</div></div>
     <div class="summary-card"><div class="summary-num">0</div><div class="summary-label">Fail-Open Events</div></div>
@@ -181,6 +181,36 @@
         <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS &mdash; Authority loss detected and enforced</div></div>
         <div class="meta-item"><div class="meta-label">Detection</div><div class="meta-value">DETECTED_GONE: True</div></div>
         <div class="meta-item"><div class="meta-label">Fail-open events</div><div class="meta-value">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="test-block reveal">
+    <div class="test-header">
+      <div class="test-id">CLEAR</div>
+      <div class="test-title-block">
+        <div class="test-name">Clearance Latch Run &mdash; Dual-Token Recovery Ceremony</div>
+        <div class="test-sub">Halt Latch Control &mdash; Full Clearance Gate &mdash; 2026-04-18T22:18 UTC</div>
+      </div>
+      <div class="test-status"><span class="pass-dot"></span><span class="pass-label">Pass</span></div>
+    </div>
+    <div class="test-body">
+      <div class="test-findings">
+        <div class="finding"><span class="finding-arrow">&#9658;</span>System remained halted while clearance conditions were not satisfied. Halt latch enforced throughout.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Invalid and expired clearance material presented &mdash; rejected at every gate. No latch lift occurred.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Stale request artifacts removed. System held position.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Valid signed clearance package presented &mdash; all required gates passed in sequence.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Halt latch cleared only after full gate validation. halt_latch_present=False confirmed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Request and signature artifacts removed after successful use. request_present=False, sig_present=False.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Boot proceeded. All 5 roles confirmed running: watchdog, master_probe, heartbeat, health_probe, bridge_feed.</div>
+        <div class="finding"><span class="finding-arrow">&#9658;</span>Watchdog full log, key events, process snapshot, and pack manifest all machine-generated and SHA-256 sealed.</div>
+      </div>
+      <div class="test-meta">
+        <div class="meta-item"><div class="meta-label">Result</div><div class="meta-value">PASS &mdash; Latch cleared after valid ceremony</div></div>
+        <div class="meta-item"><div class="meta-label">Invalid material rejected</div><div class="meta-value">Yes</div></div>
+        <div class="meta-item"><div class="meta-label">Latch present after clear</div><div class="meta-value">False</div></div>
+        <div class="meta-item"><div class="meta-label">Roles after boot</div><div class="meta-value">5/5 running</div></div>
+        <div class="meta-item"><div class="meta-label">Artifacts removed</div><div class="meta-value">Confirmed</div></div>
       </div>
     </div>
   </div>
@@ -305,6 +335,33 @@
     <div class="verify-block">
       <div class="verify-label">PowerShell verification command</div>
       <code class="verify-cmd">(Get-FileHash -Algorithm SHA256 -LiteralPath .\CHAOS_RUN_20260328_141801Z.zip).Hash</code>
+    </div>
+  </div>
+
+  <div class="download-block reveal" style="margin-top: 24px;">
+    <div class="download-header">
+      <div>
+        <div class="download-title">Clearance Latch Run &mdash; CLEARANCE_LATCH_RUN_20260418_221837Z</div>
+        <div class="download-desc">Dual-token recovery ceremony — halt latch enforcement, invalid material rejection, valid signed clearance acceptance, artifact removal, clean boot. Machine-generated and SHA-256 sealed.</div>
+      </div>
+      <a href="CLEARANCE_LATCH_RUN_20260418_221837Z.zip" class="download-btn" download>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Clearance Pack
+      </a>
+    </div>
+    <div class="download-hashes">
+      <div class="hash-row">
+        <div class="hash-label">Clearance Pack SHA-256</div>
+        <div class="hash-value">E11B123CA5F9C85794DF0F05417F717EC1A9036D96F6E9BF11A5A4F009C9AB21</div>
+      </div>
+      <div class="hash-row">
+        <div class="hash-label">Inner ZIP SHA-256 &mdash; CLEARANCE_LATCH_RUN_20260418_221837Z.zip</div>
+        <div class="hash-value">E04BE90C8FFF71F4A658FFD288C52506D5FE2F7C14ED38BB233E513DA51E53CB</div>
+      </div>
+    </div>
+    <div class="verify-block">
+      <div class="verify-label">PowerShell verification command</div>
+      <code class="verify-cmd">(Get-FileHash -Algorithm SHA256 -LiteralPath .\CLEARANCE_LATCH_RUN_20260418_221837Z.zip).Hash</code>
     </div>
   </div>
 
